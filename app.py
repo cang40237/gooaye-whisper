@@ -117,7 +117,7 @@ def transcribe(audio_bytes: bytes, filename: str) -> str:
         tmp_path = tmp.name
     
     try:
-        model = WhisperModel("medium", device="cpu", compute_type="int8")
+        model = WhisperModel("small", device="cpu", compute_type="int8")
         segments, info = model.transcribe(
             tmp_path,
             language="zh",
