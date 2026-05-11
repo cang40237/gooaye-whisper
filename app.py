@@ -156,29 +156,17 @@ def webhook():
         
         print(f"[{datetime.now()}] Processing: {filename}")
         
+        # Test: download only, skip transcription (return placeholder)
         service = get_drive_service()
-        
-        # Download audio from Drive
         audio_bytes = download_file(service, file_id)
         print(f"Downloaded {len(audio_bytes) / 1024 / 1024:.1f} MB")
         
-        # Transcribe
-        print(f"Starting transcription...")
-        transcript = transcribe(audio_bytes, filename)
-        print(f"Transcription complete: {len(transcript)} chars")
-        
-        # Upload transcript to Drive
-        base_name = filename.rsplit(".", 1)[0]
-        txt_name = f"{base_name}.txt"
-        txt_bytes = transcript.encode("utf-8")
-        result = upload_file(service, txt_name, txt_bytes, "text/plain")
-        print(f"Uploaded transcript: {txt_name} (id: {result['id']})")
-        
+        # TODO: re-enable transcription after fixing memory issues
         return jsonify({
             "success": True,
             "filename": filename,
-            "transcript_id": result["id"],
-            "chars": len(transcript)
+            "status": "downloaded_only",
+            "size_mb": len(audio_bytes) / 1024 / 1024
         })
         
     except Exception as e:
