@@ -14,7 +14,7 @@ import requests
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseUpload
+from googleapiclient.http import MediaIoBaseDownload, MediaIoBaseUpload
 import faster_whisper
 
 app = Flask(__name__)
@@ -83,8 +83,10 @@ def download_file(service, file_id):
     """Download file content from Drive."""
     request_fn = service.files().get_media(fileId=file_id)
     fh = io.BytesIO()
-    downloader = MediaIoBaseUpload(fh, resumable=False)
-    request_fn.to_httplib(downloader)
+    downloader = MediaIoBaseDownload(fh, request_fn)
+    done = False
+    while not done:
+        _, done = downloader.next_chunk()
     return fh.getvalue()
 
 
