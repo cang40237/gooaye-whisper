@@ -38,6 +38,8 @@ def _load_json_env(key):
 def get_drive_service():
     token_data = _load_json_env("G_TOKEN")
     client_data = _load_json_env("G_CLIENT")
+    print(f"G_TOKEN keys: {list(token_data.keys())}")
+    print(f"G_CLIENT keys: {list(client_data.keys())}")
 
     # Handle nested "installed" structure
     if "installed" in client_data:
