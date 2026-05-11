@@ -25,11 +25,19 @@ CLIENT_PATH = "/app/secrets/google_oauth_client.json"
 FOLDER_ID = "1SwoScajvBc5WJZwP79T8k9Skc2cwUI2W"
 
 
+def _load_json_env(key):
+    val = os.environ.get(key, "")
+    if val:
+        return json.loads(val)
+    # fallback: read from secret file
+    path = f"/app/secrets/{key.lower().replace('_token','_tokens').replace('_client','_client').replace('g_','google_')}.json"
+    with open(path) as f:
+        return json.load(f)
+
+
 def get_drive_service():
-    with open(TOKEN_PATH, "r") as f:
-        token_data = json.load(f)
-    with open(CLIENT_PATH, "r") as f:
-        client_data = json.load(f)
+    token_data = _load_json_env("G_TOKEN")
+    client_data = _load_json_env("G_CLIENT")
     
     # Handle nested "installed" structure
     if "installed" in client_data:
@@ -50,7 +58,8 @@ def refresh_credentials(creds):
     if creds.expired and creds.refresh_token:
         creds.refresh(InstalledAppFlow._build_implied_scopes(creds))
         # Save refreshed token
-        with open(TOKEN_PATH, "w") as f:
+        token_path = "/app/secrets/google_oauth_tokens.json"
+        with open(token_path, "w") as f:
             json.dump({
                 "token": creds.token,
                 "refresh_token": creds.refresh_token,
