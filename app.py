@@ -38,17 +38,19 @@ def _load_json_env(key):
 def get_drive_service():
     token_data = _load_json_env("G_TOKEN")
     client_data = _load_json_env("G_CLIENT")
-    
+
     # Handle nested "installed" structure
     if "installed" in client_data:
         client_data = client_data["installed"]
-    
+
     creds = Credentials(
-        token=token_data.get("token"),
+        token=token_data.get("access_token"),
         refresh_token=token_data.get("refresh_token"),
+        id_token=token_data.get("id_token"),
         client_id=client_data.get("client_id"),
         client_secret=client_data.get("client_secret"),
-        scopes=SCOPES
+        scopes=token_data.get("scope", "").split(),
+        token_uri="https://oauth2.googleapis.com/token"
     )
     return build("drive", "v3", credentials=creds)
 
