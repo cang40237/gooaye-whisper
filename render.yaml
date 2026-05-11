@@ -1,7 +1,9 @@
 # render.yaml - Gooaye Whisper API
+specVersion: 1
 
 services:
-  - name: gooaye-whisper
+  - type: web_service
+    name: gooaye-whisper
     runtime: python
     region: oregon
     buildCommand: pip install -r requirements.txt
@@ -9,7 +11,7 @@ services:
     healthCheckPath: /health
     envVars:
       - key: PORT
-        value: 10000
+        value: "10000"
       - key: PYTHON_VERSION
         value: "3.11"
       - key: G_TOKEN
