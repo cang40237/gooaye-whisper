@@ -15,7 +15,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload, MediaIoBaseUpload
-import faster_whisper
+from faster_whisper import WhisperModel
 
 app = Flask(__name__)
 
@@ -38,8 +38,6 @@ def _load_json_env(key):
 def get_drive_service():
     token_data = _load_json_env("G_TOKEN")
     client_data = _load_json_env("G_CLIENT")
-    print(f"G_TOKEN keys: {list(token_data.keys())}")
-    print(f"G_CLIENT keys: {list(client_data.keys())}")
 
     # Handle nested "installed" structure
     if "installed" in client_data:
@@ -119,7 +117,7 @@ def transcribe(audio_bytes: bytes, filename: str) -> str:
         tmp_path = tmp.name
     
     try:
-        model = faster_whisper.load_model("medium", device="cpu", compute_type="int8")
+        model = WhisperModel("medium", device="cpu", compute_type="int8")
         segments, info = model.transcribe(
             tmp_path,
             language="zh",
