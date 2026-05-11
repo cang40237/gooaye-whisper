@@ -107,6 +107,9 @@ def upload_file(service, name, content, mime_type="text/plain"):
     ).execute()
 
 
+# Load model once at startup (not on every request)
+model = WhisperModel("small", device="cpu", compute_type="int8")
+
 def transcribe(audio_bytes: bytes, filename: str) -> str:
     """Run faster-whisper transcription on audio bytes."""
     
@@ -117,7 +120,6 @@ def transcribe(audio_bytes: bytes, filename: str) -> str:
         tmp_path = tmp.name
     
     try:
-        model = WhisperModel("small", device="cpu", compute_type="int8")
         segments, info = model.transcribe(
             tmp_path,
             language="zh",
